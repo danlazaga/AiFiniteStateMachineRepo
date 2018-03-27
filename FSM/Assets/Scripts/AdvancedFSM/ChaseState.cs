@@ -23,15 +23,14 @@ public class ChaseState : FSMState
         //TO IMPLEMENT
         //Set the target position as the player position
         //Check the distance with player tank
-        var playerDistance = Vector3.Distance(npc.position, player.position);
         //When the distance is near, call the appropriate transition using SetTransition(Transition t) from NPCTankController 
-        if (playerDistance >= 600f)
+        if (CheckPlayerDistance(player, npc) >= 600f)
         {
             _npcTankController.SetTransition(Transition.LostPlayer);
         }
 
         //Also check when the player becomes too far, call the appropriate transition using SetTransition(Transition t) from NPCTankController 
-        else if (playerDistance <= 300f)
+        else if (CheckPlayerDistance(player, npc) <= 300f)
         {
             _npcTankController.SetTransition(Transition.ReachPlayer);
         }

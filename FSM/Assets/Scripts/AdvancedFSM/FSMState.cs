@@ -18,7 +18,7 @@ using UnityEngine;
 /// </summary>
 public abstract class FSMState
 {
-    protected Dictionary<Transition, FSMStateID> map = new Dictionary<Transition, FSMStateID>();
+    protected Dictionary<Transition, FSMStateID> map = new Dictionary<Transition, FSMStateID> ();
     protected FSMStateID stateID;
     public FSMStateID ID { get { return stateID; } }
     protected Vector3 destPos;
@@ -28,69 +28,69 @@ public abstract class FSMState
     protected float minimumDistToAvoid = 200;
     protected float force = 40;
 
-    public void AddTransition(Transition transition, FSMStateID id)
+    public void AddTransition (Transition transition, FSMStateID id)
     {
         // Check if anyone of the args is invallid
         if (transition == Transition.None || id == FSMStateID.None)
         {
-            Debug.LogWarning("FSMState : Null transition not allowed");
+            Debug.LogWarning ("FSMState : Null transition not allowed");
             return;
         }
 
         //Since this is a Deterministc FSM,
         //Check if the current transition was already inside the map
-        if (map.ContainsKey(transition))
+        if (map.ContainsKey (transition))
         {
-            Debug.LogWarning("FSMState ERROR: transition is already inside the map");
+            Debug.LogWarning ("FSMState ERROR: transition is already inside the map");
             return;
         }
 
-        map.Add(transition, id);
-        Debug.Log("Added : " + transition + " with ID : " + id);
+        map.Add (transition, id);
+        Debug.Log ("Added : " + transition + " with ID : " + id);
     }
 
     /// <summary>
     /// This method deletes a pair transition-state from this state�s map.
     /// If the transition was not inside the state�s map, an ERROR message is printed.
     /// </summary>
-    public void DeleteTransition(Transition trans)
+    public void DeleteTransition (Transition trans)
     {
         // Check for NullTransition
         if (trans == Transition.None)
         {
-            Debug.LogError("FSMState ERROR: NullTransition is not allowed");
+            Debug.LogError ("FSMState ERROR: NullTransition is not allowed");
             return;
         }
 
         // Check if the pair is inside the map before deleting
-        if (map.ContainsKey(trans))
+        if (map.ContainsKey (trans))
         {
-            map.Remove(trans);
+            map.Remove (trans);
             return;
         }
-        Debug.LogError("FSMState ERROR: Transition passed was not on this State�s List");
+        Debug.LogError ("FSMState ERROR: Transition passed was not on this State�s List");
     }
 
     /// <summary>
     /// This method returns the new state the FSM should be if
     ///    this state receives a transition  
     /// </summary>
-    public FSMStateID GetOutputState(Transition trans)
+    public FSMStateID GetOutputState (Transition trans)
     {
         // Check for NullTransition
         if (trans == Transition.None)
         {
-            Debug.LogError("FSMState ERROR: NullTransition is not allowed");
+            Debug.LogError ("FSMState ERROR: NullTransition is not allowed");
             return FSMStateID.None;
         }
 
         // Check if the map has this transition
-        if (map.ContainsKey(trans))
+        if (map.ContainsKey (trans))
         {
             return map[trans];
         }
 
-        Debug.LogError("FSMState ERROR: " + trans + " Transition passed to the State was not on the list");
+        Debug.LogError ("FSMState ERROR: " + trans + " Transition passed to the State was not on the list");
         return FSMStateID.None;
     }
 
@@ -98,22 +98,22 @@ public abstract class FSMState
     /// Decides if the state should transition to another on its list
     /// NPC is a reference to the npc tha is controlled by this class
     /// </summary>
-    public abstract void Reason(Transform player, Transform npc);
+    public abstract void Reason (Transform player, Transform npc);
 
     /// <summary>
     /// This method controls the behavior of the NPC in the game World.
     /// Every action, movement or communication the NPC does should be placed here
     /// NPC is a reference to the npc tha is controlled by this class
     /// </summary>
-    public abstract void Act(Transform player, Transform npc);
+    public abstract void Act (Transform player, Transform npc);
 
     /// <summary>
     /// Find the next semi-random patrol point
     /// </summary>
-    public void FindNextPoint()
+    public void FindNextPoint ()
     {
         //Debug.Log("Finding next point");
-        int rndIndex = Random.Range(0, waypoints.Length);
+        int rndIndex = Random.Range (0, waypoints.Length);
         Vector3 rndPosition = Vector3.zero;
         destPos = waypoints[rndIndex].position + rndPosition;
     }
@@ -122,10 +122,10 @@ public abstract class FSMState
     /// Check whether the next random position is the same as current tank position
     /// </summary>
     /// <param name="pos">position to check</param>
-    protected bool IsInCurrentRange(Transform trans, Vector3 pos)
+    protected bool IsInCurrentRange (Transform trans, Vector3 pos)
     {
-        float xPos = Mathf.Abs(pos.x - trans.position.x);
-        float zPos = Mathf.Abs(pos.z - trans.position.z);
+        float xPos = Mathf.Abs (pos.x - trans.position.x);
+        float zPos = Mathf.Abs (pos.z - trans.position.z);
 
         if (xPos <= 50 && zPos <= 50)
             return true;
@@ -133,24 +133,30 @@ public abstract class FSMState
         return false;
     }
 
-    protected void SetDestination(Transform npc)
+    protected float CheckPlayerDistance (Transform player, Transform npc)
+    {
+        var distancePlayer = (npc.position - player.position).magnitude;
+        return distancePlayer;
+    }
+
+    protected void SetDestination (Transform npc)
     {
         npc.position += npc.forward * curSpeed * Time.deltaTime;
     }
 
-    protected void SetRotation(Vector3 target, Transform npc)
+    protected void SetRotation (Vector3 target, Transform npc)
     {
-        var newRot = Quaternion.LookRotation(target);
-        npc.rotation = Quaternion.Slerp(npc.rotation, newRot, Time.deltaTime * curRotSpeed);
+        var newRot = Quaternion.LookRotation (target);
+        npc.rotation = Quaternion.Slerp (npc.rotation, newRot, Time.deltaTime * curRotSpeed);
     }
 
-    protected void TurretLookAt(Vector3 target, Transform turret)
+    protected void TurretLookAt (Vector3 target, Transform turret)
     {
-        var targetRotation = Quaternion.LookRotation(target - turret.position);
-        turret.transform.rotation = Quaternion.Slerp(turret.transform.rotation, targetRotation, Time.deltaTime * curRotSpeed);
+        var targetRotation = Quaternion.LookRotation (target - turret.position);
+        turret.transform.rotation = Quaternion.Slerp (turret.transform.rotation, targetRotation, Time.deltaTime * curRotSpeed);
     }
 
-    protected Vector3 AvoidObstacles(Vector3 target, Transform npc)
+    protected Vector3 AvoidObstacles (Vector3 target, Transform npc)
     {
         target = target - npc.position;
 
@@ -158,11 +164,11 @@ public abstract class FSMState
         target = target.normalized;
 
         RaycastHit hit;
-        Debug.DrawRay(npc.position + Vector3.up, npc.forward * minimumDistToAvoid, Color.green);
-        Debug.DrawRay(npc.position + Vector3.up, (npc.forward + npc.right).normalized * minimumDistToAvoid, Color.green);
-        Debug.DrawRay(npc.position + Vector3.up, (npc.forward - npc.right).normalized * minimumDistToAvoid, Color.green);
+        Debug.DrawRay (npc.position + Vector3.up, npc.forward * minimumDistToAvoid, Color.green);
+        Debug.DrawRay (npc.position + Vector3.up, (npc.forward + npc.right).normalized * minimumDistToAvoid, Color.green);
+        Debug.DrawRay (npc.position + Vector3.up, (npc.forward - npc.right).normalized * minimumDistToAvoid, Color.green);
 
-        if (Physics.Raycast(npc.position + Vector3.up, npc.forward, out hit, minimumDistToAvoid))
+        if (Physics.Raycast (npc.position + Vector3.up, npc.forward, out hit, minimumDistToAvoid))
         {
             if (hit.transform != npc)
             {
@@ -170,7 +176,7 @@ public abstract class FSMState
             }
         }
 
-        if (Physics.Raycast(npc.position + Vector3.up, (npc.forward + npc.right).normalized, out hit, minimumDistToAvoid))
+        if (Physics.Raycast (npc.position + Vector3.up, (npc.forward + npc.right).normalized, out hit, minimumDistToAvoid))
         {
             if (hit.transform != npc)
             {
@@ -178,7 +184,7 @@ public abstract class FSMState
             }
         }
 
-        if (Physics.Raycast(npc.position + Vector3.up, (npc.forward - npc.right).normalized, out hit, minimumDistToAvoid))
+        if (Physics.Raycast (npc.position + Vector3.up, (npc.forward - npc.right).normalized, out hit, minimumDistToAvoid))
         {
             if (hit.transform != npc)
             {

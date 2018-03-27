@@ -19,10 +19,8 @@ public class PatrolState : FSMState
     {
         //TO IMPLEMENT
         //Check the distance with player tank
-        var distancePlayer = Vector3.Distance(npc.position, player.position);
-
         //When the distance is near, call the appropriate transition using SetTransition(Transition t) from NPCTankController 
-        if (distancePlayer <= 500)
+        if (CheckPlayerDistance(player, npc) <= 500)
         {
             _npcTankController.SetTransition(Transition.SawPlayer);
         }

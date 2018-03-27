@@ -22,15 +22,13 @@ public class AttackState : FSMState
     {
         //TO IMPLEMENT
         //Check the distance with the player tank
-        var playerDistance = Vector3.Distance(npc.position, player.position);
-
         //When the distance is near, call the appropriate transition using SetTransition(Transition t) from NPCTankController 
-        if (playerDistance >= 300f)
+        if (CheckPlayerDistance(player, npc) >= 300f)
         {
             _npcController.SetTransition(Transition.SawPlayer);
         }
         //Also check when the player becomes too far, call the appropriate transition using SetTransition(Transition t) from NPCTankController 
-        if (playerDistance >= 600f)
+        if (CheckPlayerDistance(player, npc) >= 600f)
         {
             _npcController.SetTransition(Transition.LostPlayer);
         }
