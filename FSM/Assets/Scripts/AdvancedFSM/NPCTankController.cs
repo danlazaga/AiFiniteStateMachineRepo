@@ -119,7 +119,7 @@ public class NPCTankController : AdvancedFSM
         if (collision.gameObject.tag == "Bullet")
         {
             health -= 50;
-
+            
             if (health <= 0)
             {
                 Debug.Log("Switch to Dead State");
